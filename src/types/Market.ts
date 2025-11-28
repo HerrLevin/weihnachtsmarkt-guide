@@ -1,4 +1,4 @@
-export type Product = 'glühwein' | 'langos' | 'crepes' | 'bratwurst' | 'lebkuchen' | 'kartoffelpuffer'
+export type Product = 'Glühwein rot' | 'Glühwein weiss' | 'Glühwein mit Schuss' | 'Kakao'
 
 export type PaymentMethod = 'cash-only' | 'credit-card' | 'both'
 

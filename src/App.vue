@@ -38,19 +38,31 @@ const filteredStalls = computed(() => {
         .map((p) => stall.prices[p]!)
 
       if (relevantPrices.length > 0) {
-        if (filters.value.minPrice !== null && relevantPrices.every((price) => price < filters.value.minPrice!)) {
+        if (
+          filters.value.minPrice !== null &&
+          relevantPrices.every((price) => price < filters.value.minPrice!)
+        ) {
           return false
         }
-        if (filters.value.maxPrice !== null && relevantPrices.every((price) => price > filters.value.maxPrice!)) {
+        if (
+          filters.value.maxPrice !== null &&
+          relevantPrices.every((price) => price > filters.value.maxPrice!)
+        ) {
           return false
         }
       }
     } else if (filters.value.minPrice !== null || filters.value.maxPrice !== null) {
       const allPrices = Object.values(stall.prices)
-      if (filters.value.minPrice !== null && allPrices.every((price) => price < filters.value.minPrice!)) {
+      if (
+        filters.value.minPrice !== null &&
+        allPrices.every((price) => price < filters.value.minPrice!)
+      ) {
         return false
       }
-      if (filters.value.maxPrice !== null && allPrices.every((price) => price > filters.value.maxPrice!)) {
+      if (
+        filters.value.maxPrice !== null &&
+        allPrices.every((price) => price > filters.value.maxPrice!)
+      ) {
         return false
       }
     }
@@ -120,8 +132,8 @@ onMounted(() => {
         },
       ],
     },
-    center: [10.45, 51.16],
-    zoom: 5,
+    center: [8.398733407798233, 49.00868278281362],
+    zoom: 16,
   })
 
   map.on('load', () => {
