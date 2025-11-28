@@ -60,12 +60,17 @@ const filteredStalls = computed(() => {
   })
 })
 
-const vegan = ' (vegan)'
+function formatProductName(product: Product): string {
+  let name = product.name.toString()
+  if (product.name === 'Andere' && product.alias) {
+    name = product.alias
+  }
+  const vegan = product.vegan === 'Ja' ? ' (vegan)' : ''
+  return `${name}${vegan}: €${product.price.toFixed(2)}`
+}
 
 function formatProducts(products: Product[]): string {
-  return products
-    .map((p) => `${p.name}${p.vegan === 'Ja' ? vegan : ''}: €${p.price.toFixed(2)}`)
-    .join('<br/>')
+  return products.map((p) => formatProductName(p)).join('<br/>')
 }
 
 function stallsToGeoJSON(stalls: MarketStall[]): GeoJSON.FeatureCollection {

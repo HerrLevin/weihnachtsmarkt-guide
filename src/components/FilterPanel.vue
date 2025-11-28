@@ -20,6 +20,7 @@ const products: ProductName[] = [
   'Glühwein mit Schuss',
   'Kakao',
   'Kinderpunsch',
+  'Andere',
 ]
 const paymentOptions: { value: PaymentMethod; label: string }[] = [
   { value: 'cash-only', label: 'Cash Only' },
