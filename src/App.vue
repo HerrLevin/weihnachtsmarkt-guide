@@ -19,49 +19,38 @@ const filters = ref<Filters>({
 
 const filteredStalls = computed(() => {
   return marketStalls.filter((stall) => {
-    if (filters.value.vegan !== null && stall.vegan !== filters.value.vegan) {
-      return false
-    }
     if (filters.value.payment !== null && stall.payment !== filters.value.payment) {
       return false
     }
 
-    const selectedProducts = filters.value.products
-    const stallProducts = Object.keys(stall.prices) as Product[]
+    const selectedProductNames = filters.value.products
+    const stallProductNames = stall.products.map((p) => p.name)
 
-    if (selectedProducts.length > 0) {
-      const hasSelectedProduct = selectedProducts.some((p) => stallProducts.includes(p))
+    let relevantProducts = stall.products
+    if (selectedProductNames.length > 0) {
+      const hasSelectedProduct = selectedProductNames.some((name) =>
+        stallProductNames.includes(name),
+      )
       if (!hasSelectedProduct) return false
+      relevantProducts = stall.products.filter((p) => selectedProductNames.includes(p.name))
+    }
 
-      const relevantPrices = selectedProducts
-        .filter((p) => stall.prices[p] !== undefined)
-        .map((p) => stall.prices[p]!)
+    if (filters.value.vegan !== null) {
+      const hasMatchingVeganProduct = relevantProducts.some((p) => p.vegan === filters.value.vegan)
+      if (!hasMatchingVeganProduct) return false
+    }
 
-      if (relevantPrices.length > 0) {
-        if (
-          filters.value.minPrice !== null &&
-          relevantPrices.every((price) => price < filters.value.minPrice!)
-        ) {
-          return false
-        }
-        if (
-          filters.value.maxPrice !== null &&
-          relevantPrices.every((price) => price > filters.value.maxPrice!)
-        ) {
-          return false
-        }
-      }
-    } else if (filters.value.minPrice !== null || filters.value.maxPrice !== null) {
-      const allPrices = Object.values(stall.prices)
+    const relevantPrices = relevantProducts.map((p) => p.price)
+    if (filters.value.minPrice !== null || filters.value.maxPrice !== null) {
       if (
         filters.value.minPrice !== null &&
-        allPrices.every((price) => price < filters.value.minPrice!)
+        relevantPrices.every((price) => price < filters.value.minPrice!)
       ) {
         return false
       }
       if (
         filters.value.maxPrice !== null &&
-        allPrices.every((price) => price > filters.value.maxPrice!)
+        relevantPrices.every((price) => price > filters.value.maxPrice!)
       ) {
         return false
       }
@@ -71,10 +60,12 @@ const filteredStalls = computed(() => {
   })
 })
 
-function formatPrices(prices: Record<string, number>): string {
-  return Object.entries(prices)
-    .map(([product, price]) => `${product}: €${price.toFixed(2)}`)
-    .join(', ')
+const vegan = ' (vegan)'
+
+function formatProducts(products: Product[]): string {
+  return products
+    .map((p) => `${p.name}${p.vegan === 'Ja' ? vegan : ''}: €${p.price.toFixed(2)}`)
+    .join('<br/>')
 }
 
 function stallsToGeoJSON(stalls: MarketStall[]): GeoJSON.FeatureCollection {
@@ -89,9 +80,8 @@ function stallsToGeoJSON(stalls: MarketStall[]): GeoJSON.FeatureCollection {
       properties: {
         id: stall.id,
         name: stall.name,
-        vegan: stall.vegan,
         payment: stall.payment,
-        prices: formatPrices(stall.prices),
+        products: formatProducts(stall.products),
       },
     })),
   }
@@ -169,9 +159,8 @@ onMounted(() => {
         .setLngLat(coordinates)
         .setHTML(
           `<strong>${props?.name}</strong><br/>
-           Vegan: ${props?.vegan ? 'Yes' : 'No'}<br/>
            Payment: ${props?.payment}<br/>
-           ${props?.prices}`,
+           ${props?.products}`,
         )
         .addTo(map)
     })

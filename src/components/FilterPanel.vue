@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { reactive, watch } from 'vue'
-import type { Filters, PaymentMethod, Product } from '@/types/Market'
+import type { Filters, PaymentMethod, ProductName, VeganPossibilities } from '@/types/Market'
 
 const emit = defineEmits<{
   filter: [filters: Filters]
@@ -14,21 +14,21 @@ const filters = reactive<Filters>({
   maxPrice: null,
 })
 
-const products: Product[] = [
-  'glühwein',
-  'langos',
-  'crepes',
-  'bratwurst',
-  'lebkuchen',
-  'kartoffelpuffer',
+const products: ProductName[] = [
+  'Glühwein rot',
+  'Glühwein weiss',
+  'Glühwein mit Schuss',
+  'Kakao',
+  'Kinderpunsch',
 ]
 const paymentOptions: { value: PaymentMethod; label: string }[] = [
   { value: 'cash-only', label: 'Cash Only' },
   { value: 'credit-card', label: 'Credit Card' },
   { value: 'both', label: 'Both' },
 ]
+const veganOptions: VeganPossibilities[] = ['Ja', 'Nein', 'Nicht sicher', 'keine Daten']
 
-function toggleProduct(product: Product) {
+function toggleProduct(product: ProductName) {
   const index = filters.products.indexOf(product)
   if (index === -1) {
     filters.products.push(product)
@@ -38,7 +38,7 @@ function toggleProduct(product: Product) {
   emitFilters()
 }
 
-function setVegan(value: boolean | null) {
+function setVegan(value: VeganPossibilities) {
   filters.vegan = filters.vegan === value ? null : value
   emitFilters()
 }
@@ -77,8 +77,14 @@ watch(
     <div class="filter-section">
       <label>Vegan</label>
       <div class="button-group">
-        <button :class="{ active: filters.vegan === true }" @click="setVegan(true)">Yes</button>
-        <button :class="{ active: filters.vegan === false }" @click="setVegan(false)">No</button>
+        <button
+          v-for="opt in veganOptions"
+          :key="opt"
+          :class="{ active: filters.vegan === opt }"
+          @click="setVegan(opt)"
+        >
+          {{ opt }}
+        </button>
       </div>
     </div>
 

@@ -1,22 +1,33 @@
-export type Product = 'Glühwein rot' | 'Glühwein weiss' | 'Glühwein mit Schuss' | 'Kakao'
+export type ProductName =
+  | 'Glühwein rot'
+  | 'Glühwein weiss'
+  | 'Glühwein mit Schuss'
+  | 'Kakao'
+  | 'Kinderpunsch'
 
 export type PaymentMethod = 'cash-only' | 'credit-card' | 'both'
 
-export type ProductPrices = Partial<Record<Product, number>>
+export type VeganPossibilities = 'Ja' | 'Nein' | 'Nicht sicher' | 'keine Daten'
+
+export interface Product {
+  name: ProductName
+  price: number
+  description?: string
+  vegan: VeganPossibilities
+}
 
 export interface MarketStall {
   id: string
   name: string
   coordinates: [number, number]
-  vegan: boolean
   payment: PaymentMethod
-  prices: ProductPrices
+  products: Product[]
 }
 
 export interface Filters {
-  vegan: boolean | null
+  vegan: VeganPossibilities | null
   payment: PaymentMethod | null
-  products: Product[]
+  products: ProductName[]
   minPrice: number | null
   maxPrice: number | null
 }
